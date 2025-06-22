@@ -1,0 +1,11 @@
+*.tfstate
+.tfplan
+terraform.tfstate.backup
+.terraform/
+terraform.tfvars
+secrets.auto.tfvars
+build_lambdas/
+builds/
+*.sw*
+.idea/
+.vscode/
