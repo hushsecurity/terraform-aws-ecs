@@ -47,8 +47,8 @@ Reusable Terraform module for deploying **Hush Security components** on AWS ECS 
    aws_region  = "eu-west-1"
    cluster_name = "my-ecs-cluster"
 
-   container_registry_username  = "my-acr-user"
-   container_registry_password  = "my-acr-password"
+   container_registry_username  = "my-container-registry-username"
+   container_registry_password  = "my-container-registry-password"
 
    deployment_token    = "my-deployment-token"
    deployment_password = "my-deployment-password"
@@ -78,7 +78,7 @@ Set these values in `terraform.tfvars`:
 Terraform will upload these to Secrets Manager and pass them securely to the ECS task.
 
 ### 2. **Use existing Secrets Manager ARNs**
-Instead of plaintext values, use:
+Instead of secret values, use:
 
 - `deployment_credentials_secret_arn`
 - `container_registry_credentials_secret_arn`
@@ -89,7 +89,7 @@ Instead of plaintext values, use:
 
 - ECS DAEMON-style deployment (1 task per EC2 instance)
 - Deploys both `sensor` and `sensor-vector` containers
-- Supports private container registries (e.g. Azure ACR)
+- Supports private container registries (e.g. Azure Container Registry)
 - Secure secrets injection via AWS Secrets Manager
 - Configurable CPU/memory requests and limits
 
