@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - HostPath volumes for container runtimes (`docker.sock`, `containerd.sock`, `cgroup`).
   - Optional container registry auth via `repositoryCredentials`.
 - `secrets` module:
-  - Manages ECS secret injection for deployment token, password, and ACR credentials.
+  - Manages ECS secret injection for deployment token, password, and container registry credentials.
   - Supports pre-existing secret ARNs or creates new ones via `tfvars`.
 - `iam` module:
   - Defines the ECS execution role (`hush-ecs-role`) with inline policy.
