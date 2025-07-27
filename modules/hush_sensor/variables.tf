@@ -63,9 +63,15 @@ variable "report_tls" {
 }
 
 variable "cri_socket_path" {
-  description = "Path to the CRI socket used by the sensor"
+  description = "Absolute path to the CRI socket used by the sensor (e.g., /var/run/containerd/containerd.sock)"
   type        = string
-  default     = "/var/run/containerd/containerd.sock"
+  default     = ""
+}
+
+variable "docker_socket_path" {
+  description = "Absolute path to the Docker socket used by the sensor"
+  type        = string
+  default     = "/var/run/docker.sock"
 }
 
 variable "akeyless_gateway_domain" {
