@@ -1,6 +1,13 @@
+locals {
+  # ECS resource names and values
+  task_family     = "hush-sensor-service"
+  service_name    = "hush-sensor-daemon"
+  launch_type     = "EC2"
+}
+
 resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
-  family                   = "hush-sensor-service"
-  requires_compatibilities = ["EC2"]
+  family                   = local.task_family
+  requires_compatibilities = [local.launch_type]
   pid_mode                 = "host"
   execution_role_arn       = var.execution_role_arn
 
@@ -16,25 +23,33 @@ resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
         initProcessEnabled = true,
         capabilities       = { add = ["ALL"] }
       },
-      environment = [
+      secrets = var.deployment_credentials_secret_list,
+      repositoryCredentials = {
+        credentialsParameter = var.container_registry_credentials_secret_arn
+      },
+      environment = concat([
         { name = "DEPLOYMENT_KIND", value = "ecs" },
-        { name = "CRI_SOCKET_PATH", value = var.cri_socket_path },
-        { name = "EVENT_REPORTING_CONSOLE", value = var.event_reporting_console },
+        { name = "ECS_CLUSTER", value = var.cluster_name },
+        { name = "ECS_SERVICE", value = local.service_name },
+        { name = "ECS_TASK_DEFINITION", value = local.task_family },
+        { name = "ECS_LAUNCH_TYPE", value = local.launch_type },
         { name = "TRACE_HOST", value = tostring(var.trace_host) },
         { name = "TRACE_PODS_DEFAULT", value = tostring(var.trace_pods_default) },
         { name = "REPORT_TLS", value = tostring(var.report_tls) },
-        { name = "AKEYLESS_GATEWAY_DOMAIN", value = tostring(var.akeyless_gateway_domain) }
-      ],
-      secrets = var.deployment_credentials_secret_list,
-      mountPoints = [
-        { sourceVolume = "docker_sock", containerPath = "/var/run/docker.sock", readOnly = true },
-        { sourceVolume = "containerd_sock", containerPath = "/var/run/containerd/containerd.sock", readOnly = true },
-        { sourceVolume = "host_cgroup", containerPath = "/hostcgroup", readOnly = true },
-        { sourceVolume = "vector", containerPath = "/tmp/vector" }
-      ],
-      repositoryCredentials = {
-        credentialsParameter = var.container_registry_credentials_secret_arn
-      }
+        { name = "AKEYLESS_GATEWAY_DOMAIN", value = tostring(var.akeyless_gateway_domain) },
+        { name = "EVENT_REPORTING_CONSOLE", value = var.event_reporting_console }
+        ],
+        var.cri_socket_path != null && var.cri_socket_path != "" ?
+        [{ name = "CRI_SOCKET_PATH", value = var.cri_socket_path }] : []),
+      mountPoints = concat([
+        { sourceVolume = "cgroupfs", containerPath = "/hostcgroup", readOnly = true },
+        { sourceVolume = "vector-socket", containerPath = "/tmp/vector" },
+        { sourceVolume = "host-dir", containerPath = "/var/lib/hush-security" },
+        ],
+        var.docker_socket_path != null && var.docker_socket_path != "" ?
+        [{ sourceVolume = "docker-socket", containerPath = dirname(var.docker_socket_path), readOnly = true }] : [],
+        var.cri_socket_path != null && var.cri_socket_path != "" ?
+        [{ sourceVolume = "cri-socket", containerPath = dirname(var.cri_socket_path), readOnly = true }] : [])
     },
     {
       name              = "sensor-vector",
@@ -48,12 +63,16 @@ resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
       },
       environment = [
         { name = "DEPLOYMENT_KIND", value = "ecs" },
+        { name = "ECS_CLUSTER", value = var.cluster_name },
+        { name = "ECS_SERVICE", value = local.service_name },
+        { name = "ECS_TASK_DEFINITION", value = local.task_family },
+        { name = "ECS_LAUNCH_TYPE", value = local.launch_type },
         { name = "EVENT_REPORTING_CONSOLE", value = var.event_reporting_console },
         { name = "REPORT_TLS", value = tostring(var.report_tls) }
       ],
       secrets = var.deployment_credentials_secret_list,
       mountPoints = [
-        { sourceVolume = "vector", containerPath = "/tmp/vector" }
+        { sourceVolume = "vector-socket", containerPath = "/tmp/vector" }
       ],
       repositoryCredentials = {
         credentialsParameter = var.container_registry_credentials_secret_arn
@@ -61,31 +80,42 @@ resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
     }
   ])
 
-  volume {
-    name      = "docker_sock"
-    host_path = "/var/run/docker.sock"
+  dynamic "volume" {
+    for_each = var.docker_socket_path != null && var.docker_socket_path != "" ? [1] : []
+    content {
+      name      = "docker-socket"
+      host_path = dirname(var.docker_socket_path)
+    }
+  }
+
+  dynamic "volume" {
+    for_each = var.cri_socket_path != null && var.cri_socket_path != "" ? [1] : []
+    content {
+      name      = "cri-socket"
+      host_path = dirname(var.cri_socket_path)
+    }
   }
 
   volume {
-    name      = "containerd_sock"
-    host_path = "/var/run/containerd/containerd.sock"
+    name = "vector-socket"
   }
 
   volume {
-    name      = "host_cgroup"
+    name      = "cgroupfs"
     host_path = "/sys/fs/cgroup"
   }
 
   volume {
-    name      = "vector"
-    host_path = "/tmp/vector"
+    name      = "host-dir"
+    host_path = "/var/lib/hush-security"
   }
+
 }
 
 resource "aws_ecs_service" "hush_sensor_service" {
-  name                = "hush-sensor-daemon"
+  name                = local.service_name
   cluster             = var.cluster_name
-  launch_type         = "EC2"
+  launch_type         = local.launch_type
   scheduling_strategy = "DAEMON"
   task_definition     = aws_ecs_task_definition.hush_sensor_task_definition.arn
 }
