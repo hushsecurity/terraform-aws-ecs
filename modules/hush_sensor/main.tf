@@ -1,8 +1,8 @@
 locals {
   # ECS resource names and values
-  task_family     = "hush-sensor-service"
-  service_name    = "hush-sensor-daemon"
-  launch_type     = "EC2"
+  task_family  = "hush-sensor-service"
+  service_name = "hush-sensor-daemon"
+  launch_type  = "EC2"
 }
 
 resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
@@ -40,7 +40,7 @@ resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
         { name = "EVENT_REPORTING_CONSOLE", value = var.event_reporting_console }
         ],
         var.cri_socket_path != null && var.cri_socket_path != "" ?
-        [{ name = "CRI_SOCKET_PATH", value = var.cri_socket_path }] : []),
+      [{ name = "CRI_SOCKET_PATH", value = var.cri_socket_path }] : []),
       mountPoints = concat([
         { sourceVolume = "cgroupfs", containerPath = "/hostcgroup", readOnly = true },
         { sourceVolume = "vector-socket", containerPath = "/tmp/vector" },
@@ -49,7 +49,7 @@ resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
         var.docker_socket_path != null && var.docker_socket_path != "" ?
         [{ sourceVolume = "docker-socket", containerPath = dirname(var.docker_socket_path), readOnly = true }] : [],
         var.cri_socket_path != null && var.cri_socket_path != "" ?
-        [{ sourceVolume = "cri-socket", containerPath = dirname(var.cri_socket_path), readOnly = true }] : [])
+      [{ sourceVolume = "cri-socket", containerPath = dirname(var.cri_socket_path), readOnly = true }] : [])
     },
     {
       name              = "sensor-vector",
