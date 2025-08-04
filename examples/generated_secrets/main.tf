@@ -1,5 +1,6 @@
 module "hush_service" {
-  source = "../../"
+  source  = "hushsecurity/hush-ecs/aws"
+  version = "~> 1.0"
 
   cluster_name       = var.cluster_name
   container_registry = var.container_registry
