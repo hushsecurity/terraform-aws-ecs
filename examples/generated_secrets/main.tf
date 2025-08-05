@@ -1,5 +1,10 @@
+terraform {
+  required_version = ">= 1.3"
+}
+
 module "hush_service" {
-  source = "../../"
+  source  = "hushsecurity/ecs/hush"
+  version = "~> 1.0"
 
   cluster_name       = var.cluster_name
   container_registry = var.container_registry

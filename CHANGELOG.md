@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.0.0] - 2025-08-04
+
 ### Added
 
 - Initial support for deploying the Hush sensor as a Daemon ECS service on EC2.
@@ -26,6 +28,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
   - `enable_sensor`, `event_reporting_console`, `trace_host`, `trace_pods_default`, `report_tls`, `akeyless_gateway_domain`.
 - Input validation:
   - Ensures `cluster_name` is not empty.
+- Public module examples that reference the Terraform Registry
+- Updated documentation for public repository usage
+
+### Changed
+- Examples now use public module source from Terraform Registry
+- Updated all documentation to reflect public repository status
 
 ## [0.0.1] - 2025-07-08
 
@@ -34,5 +42,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First public release of the `terraform-hush-ecs` module.
 - Includes all modules, wiring, secrets, IAM roles, and ECS service definition.
 
-[unreleased]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v0.0.1...HEAD  
+[unreleased]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v1.0.0...HEAD
+[1.0.0]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v0.0.1...v1.0.0
 [0.0.1]: https://github.com/hushsecurity/terraform-hush-ecs/releases/tag/v0.0.1
