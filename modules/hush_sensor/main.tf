@@ -31,7 +31,7 @@ resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
         { name = "DEPLOYMENT_KIND", value = "ecs" },
         { name = "ECS_CLUSTER", value = var.cluster_name },
         { name = "ECS_SERVICE", value = local.service_name },
-        { name = "ECS_TASK_DEFINITION", value = local.task_family },
+        { name = "SELF_ECS_TASK_FAMILY", value = local.task_family },
         { name = "ECS_LAUNCH_TYPE", value = local.launch_type },
         { name = "TRACE_HOST", value = tostring(var.trace_host) },
         { name = "TRACE_PODS_DEFAULT", value = tostring(var.trace_pods_default) },
