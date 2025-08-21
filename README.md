@@ -9,11 +9,13 @@ Reusable Terraform module for deploying **Hush Security components** on AWS ECS 
 ```
 .
 ├── examples
-│   └── base                         # Configuration to deploy the Hush ECS services on EC2-backed ECS
+│   ├── existing_secret              # Example using pre-existing secrets  
+│   └── generated_secrets            # Example creating new secrets
 ├── iam.tf                           # IAM role and policies for ECS execution
 ├── main.tf                          # Root module wiring IAM, secrets, ECS task
 ├── modules
-│   └── hush_sensor                  # Configuration for hush_sensor service module
+│   ├── hush_sensor                  # Configuration for hush_sensor service module
+│   └── hush_vermon                  # Configuration for hush_vermon auto-upgrade module
 ├── outputs.tf                       # Root outputs
 ├── variables.tf                     # Root input variables
 ├── secrets.tf                       # Secrets Manager integration
@@ -35,10 +37,12 @@ Reusable Terraform module for deploying **Hush Security components** on AWS ECS 
 
 ## ▶️ Usage
 
-1. Navigate to the example directory:
+1. Navigate to an example directory:
 
    ```bash
-   cd examples/base
+   cd examples/generated_secrets
+   # OR
+   cd examples/existing_secret
    ```
 
 2. Define your credentials and configuration in `terraform.tfvars`, for example:
@@ -89,6 +93,7 @@ Instead of secret values, use:
 
 - ECS DAEMON-style deployment (1 task per EC2 instance)
 - Deploys both `sensor` and `sensor-vector` containers
+- **Auto-upgrade capability via Vermon** (optional, enabled by default)
 - Supports private container registries (e.g. Azure Container Registry)
 - Secure secrets injection via AWS Secrets Manager
 - Configurable CPU/memory requests and limits
@@ -107,7 +112,7 @@ See [`outputs.tf`](./outputs.tf) for details. Notable outputs include:
 
 ## 🧪 Example
 
-For a working example, see [`examples/base`](./examples/base).
+For working examples, see [`examples/generated_secrets`](./examples/generated_secrets) and [`examples/existing_secret`](./examples/existing_secret).
 
 ---
 
