@@ -12,3 +12,8 @@ output "ecs_task_definition_arn" {
   value       = aws_ecs_task_definition.hush_sensor_task_definition.arn
   description = "The full ARN of the ECS task definition"
 }
+
+output "ecs_task_family" {
+  value       = aws_ecs_task_definition.hush_sensor_task_definition.family
+  description = "The task family name for the sensor"
+}
