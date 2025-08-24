@@ -17,6 +17,39 @@ variable "enable_sensor" {
   default     = true
 }
 
+variable "enable_vermon" {
+  description = "Whether to deploy the Vermon auto-upgrade component"
+  type        = bool
+  default     = true
+}
+
+# ─────────────────────────────────────────────
+# Service naming configuration
+# ─────────────────────────────────────────────
+variable "sensor_service_name" {
+  description = "Name of the ECS service for the sensor"
+  type        = string
+  default     = "hush-sensor-daemon"
+}
+
+variable "vermon_service_name" {
+  description = "Name of the ECS service for vermon"
+  type        = string
+  default     = "hush-vermon"
+}
+
+variable "sensor_task_definition_family" {
+  description = "Name of the ECS task definition family for the sensor"
+  type        = string
+  default     = "hush-sensor-service"
+}
+
+variable "vermon_task_definition_family" {
+  description = "Name of the ECS task definition family for vermon"
+  type        = string
+  default     = "hush-vermon-service"
+}
+
 # ─────────────────────────────────────────────
 # Runtime configuration and behavior toggles
 # ─────────────────────────────────────────────
@@ -60,6 +93,42 @@ variable "akeyless_gateway_domain" {
   description = "Custom Akeyless gateway domain (optional)"
   type        = string
   default     = ""
+}
+
+# ─────────────────────────────────────────────
+# Container image configuration
+# ─────────────────────────────────────────────
+variable "sensor_tag" {
+  description = "Tag to use for sensor container images"
+  type        = string
+  default     = "v0"
+}
+
+variable "sensor_image_repo" {
+  description = "Repository name for the sensor container"
+  type        = string
+  default     = "sensor"
+}
+
+variable "sensor_vector_image_repo" {
+  description = "Repository name for the vector sidecar container"
+  type        = string
+  default     = "sensor-vector"
+}
+
+variable "vermon_image_repo" {
+  description = "Repository name for the vermon container"
+  type        = string
+  default     = "vermon"
+}
+
+# ─────────────────────────────────────────────
+# Vermon auto-upgrade configuration
+# ─────────────────────────────────────────────
+variable "vermon_update_frequency" {
+  description = "How often Vermon checks for updates (e.g., '300s', '5m')"
+  type        = string
+  default     = "300s"
 }
 
 # ─────────────────────────────────────────────

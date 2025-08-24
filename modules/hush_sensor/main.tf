@@ -1,7 +1,6 @@
 locals {
-  # ECS resource names and values
-  task_family  = "hush-sensor-service"
-  service_name = "hush-sensor-daemon"
+  task_family  = var.task_definition_family
+  service_name = var.service_name
   launch_type  = "EC2"
 }
 
@@ -29,6 +28,7 @@ resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
       },
       environment = concat([
         { name = "DEPLOYMENT_KIND", value = "ecs" },
+        { name = "EXCLUDE_TASK_FAMILIES", value = var.exclude_task_families },
         { name = "ECS_CLUSTER", value = var.cluster_name },
         { name = "ECS_SERVICE", value = local.service_name },
         { name = "SELF_ECS_TASK_FAMILY", value = local.task_family },
