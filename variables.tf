@@ -17,6 +17,12 @@ variable "enable_sensor" {
   default     = true
 }
 
+variable "enable_vermon" {
+  description = "Whether to deploy the Vermon auto-upgrade component"
+  type        = bool
+  default     = true
+}
+
 # ─────────────────────────────────────────────
 # Runtime configuration and behavior toggles
 # ─────────────────────────────────────────────
@@ -60,6 +66,42 @@ variable "akeyless_gateway_domain" {
   description = "Custom Akeyless gateway domain (optional)"
   type        = string
   default     = ""
+}
+
+# ─────────────────────────────────────────────
+# Container image configuration
+# ─────────────────────────────────────────────
+variable "sensor_tag" {
+  description = "Tag to use for sensor container images"
+  type        = string
+  default     = "v0"
+}
+
+variable "sensor_image_repo" {
+  description = "Repository name for the sensor container"
+  type        = string
+  default     = "sensor"
+}
+
+variable "sensor_vector_image_repo" {
+  description = "Repository name for the vector sidecar container"
+  type        = string
+  default     = "sensor-vector"
+}
+
+variable "vermon_image_repo" {
+  description = "Repository name for the vermon container"
+  type        = string
+  default     = "vermon"
+}
+
+# ─────────────────────────────────────────────
+# Vermon auto-upgrade configuration
+# ─────────────────────────────────────────────
+variable "vermon_update_frequency" {
+  description = "How often Vermon checks for updates (e.g., '300s', '5m')"
+  type        = string
+  default     = "300s"
 }
 
 # ─────────────────────────────────────────────
