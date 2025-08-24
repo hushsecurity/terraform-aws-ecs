@@ -1,16 +1,31 @@
-output "ecs_service_name" {
-  value       = module.hush_service.ecs_service_name
-  description = "The ECS service name"
+output "sensor_service_name" {
+  value       = module.hush_service.sensor_service_name
+  description = "The sensor ECS service name"
 }
 
-output "ecs_service_arn" {
-  value       = module.hush_service.ecs_service_arn
-  description = "The ECS service ARN"
+output "sensor_service_arn" {
+  value       = module.hush_service.sensor_service_arn
+  description = "The sensor ECS service ARN"
 }
 
-output "ecs_task_definition_arn" {
-  value       = module.hush_service.ecs_task_definition_arn
-  description = "The ECS task definition ARN"
+output "sensor_task_definition_arn" {
+  value       = module.hush_service.sensor_task_definition_arn
+  description = "The sensor ECS task definition ARN"
+}
+
+output "vermon_service_name" {
+  value       = module.hush_service.vermon_service_name
+  description = "The Vermon ECS service name"
+}
+
+output "vermon_service_arn" {
+  value       = module.hush_service.vermon_service_arn
+  description = "The Vermon ECS service ARN"
+}
+
+output "vermon_task_definition_arn" {
+  value       = module.hush_service.vermon_task_definition_arn
+  description = "The Vermon ECS task definition ARN"
 }
 
 output "deployment_credentials_secret_arn" {
