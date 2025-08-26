@@ -65,3 +65,29 @@ module "hush_sensor" {
   sensor_vector_image_repo = var.sensor_vector_image_repo
   sensor_tag               = var.sensor_tag
 }
+
+module "hush_vermon" {
+  count = var.enable_vermon ? 1 : 0
+
+  source = "./modules/hush_vermon"
+
+  task_definition_family = local.task_families.vermon
+  service_name           = var.vermon_service_name
+  cluster_name           = var.cluster_name
+  execution_role_arn     = aws_iam_role.hush_ecs_role.arn
+  vermon_task_role_arn   = aws_iam_role.hush_vermon_role[0].arn
+
+  deployment_name      = var.cluster_name
+  manage_task_families = local.manage_task_families
+
+  event_reporting_console = var.event_reporting_console
+  vermon_update_frequency = var.vermon_update_frequency
+
+  container_registry                        = var.container_registry
+  deployment_credentials_secret_list        = local.deployment_credentials_secret_list
+  container_registry_credentials_secret_arn = local.container_registry_credentials_secret_arn
+
+  vermon_image_repo        = var.vermon_image_repo
+  vermon_vector_image_repo = var.sensor_vector_image_repo
+  vermon_tag               = var.sensor_tag
+}
