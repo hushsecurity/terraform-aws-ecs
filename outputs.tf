@@ -1,16 +1,16 @@
-output "ecs_service_name" {
+output "sensor_service_name" {
   value       = module.hush_sensor[0].ecs_service_name
-  description = "The ECS service name"
+  description = "The sensor ECS service name"
 }
 
-output "ecs_service_arn" {
+output "sensor_service_arn" {
   value       = module.hush_sensor[0].ecs_service_arn
-  description = "The ECS service ARN"
+  description = "The sensor ECS service ARN"
 }
 
-output "ecs_task_definition_arn" {
+output "sensor_task_definition_arn" {
   value       = module.hush_sensor[0].ecs_task_definition_arn
-  description = "The ECS task definition ARN"
+  description = "The sensor ECS task definition ARN"
 }
 
 output "deployment_credentials_secret_arn" {

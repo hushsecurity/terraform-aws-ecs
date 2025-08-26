@@ -1,6 +1,17 @@
 # ─────────────────────────────────────────────
 # Required core deployment configuration
 # ─────────────────────────────────────────────
+variable "task_definition_family" {
+  description = "Name of the ECS task definition family for this sensor service"
+  type        = string
+}
+
+variable "service_name" {
+  description = "Name of the ECS service for this sensor"
+  type        = string
+  default     = "hush-sensor-daemon"
+}
+
 variable "cluster_name" {
   description = "Name of the ECS cluster to deploy into"
   type        = string
@@ -9,6 +20,14 @@ variable "cluster_name" {
     condition     = length(trim(var.cluster_name, " ")) > 0
     error_message = "The 'cluster_name' value is required and cannot be empty"
   }
+}
+
+# ─────────────────────────────────────────────
+# Container identification
+# ─────────────────────────────────────────────
+variable "exclude_task_families" {
+  description = "Comma-separated list of ECS task definition families that sensor should exclude from scanning"
+  type        = string
 }
 
 variable "container_registry" {

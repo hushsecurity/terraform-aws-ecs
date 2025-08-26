@@ -1,6 +1,7 @@
 locals {
   deployment_credentials_secret_arn         = var.deployment_credentials_secret_arn != null ? var.deployment_credentials_secret_arn : aws_secretsmanager_secret.deployment_credentials[0].arn
   container_registry_credentials_secret_arn = var.container_registry_credentials_secret_arn != null ? var.container_registry_credentials_secret_arn : aws_secretsmanager_secret.container_registry_credentials[0].arn
+
   deployment_credentials_secret_list = [
     {
       name      = "DEPLOYMENT_PASSWORD",
@@ -11,6 +12,28 @@ locals {
       valueFrom = "${local.deployment_credentials_secret_arn}:deployment_token::"
     }
   ]
+
+  # Centralized task family definitions - this is the single source of truth
+  # When adding new modules, add their task family names here
+  task_families = {
+    sensor = var.sensor_task_definition_family
+    vermon = var.vermon_task_definition_family
+  }
+
+  # Map of all module enable flags - matches task_families keys
+  # Add corresponding var.enable_* variables when adding new modules
+  module_enable_flags = {
+    sensor = var.enable_sensor
+    vermon = var.enable_vermon
+  }
+
+  # Build list of task families for Hush namespace-equivalent logic
+  manage_task_families_list = [
+    for module_name, task_family in local.task_families :
+    task_family if local.module_enable_flags[module_name]
+  ]
+
+  manage_task_families = join(",", local.manage_task_families_list)
 }
 
 
@@ -19,8 +42,12 @@ module "hush_sensor" {
 
   source = "./modules/hush_sensor"
 
-  cluster_name       = var.cluster_name
-  execution_role_arn = aws_iam_role.hush_ecs_role.arn
+  task_definition_family = local.task_families.sensor
+  service_name           = var.sensor_service_name
+  cluster_name           = var.cluster_name
+  execution_role_arn     = aws_iam_role.hush_ecs_role.arn
+
+  exclude_task_families = local.manage_task_families
 
   event_reporting_console = var.event_reporting_console
   trace_host              = var.trace_host
@@ -33,4 +60,8 @@ module "hush_sensor" {
   container_registry                        = var.container_registry
   deployment_credentials_secret_list        = local.deployment_credentials_secret_list
   container_registry_credentials_secret_arn = local.container_registry_credentials_secret_arn
+
+  sensor_image_repo        = var.sensor_image_repo
+  sensor_vector_image_repo = var.sensor_vector_image_repo
+  sensor_tag               = var.sensor_tag
 }
