@@ -18,6 +18,33 @@ variable "enable_sensor" {
 }
 
 # ─────────────────────────────────────────────
+# Service naming configuration
+# ─────────────────────────────────────────────
+variable "sensor_service_name" {
+  description = "Name of the ECS service for the sensor"
+  type        = string
+  default     = "hush-sensor-daemon"
+}
+
+variable "vermon_service_name" {
+  description = "Name of the ECS service for vermon"
+  type        = string
+  default     = "hush-vermon"
+}
+
+variable "sensor_task_definition_family" {
+  description = "Name of the ECS task definition family for the sensor"
+  type        = string
+  default     = "hush-sensor-service"
+}
+
+variable "vermon_task_definition_family" {
+  description = "Name of the ECS task definition family for vermon"
+  type        = string
+  default     = "hush-vermon-service"
+}
+
+# ─────────────────────────────────────────────
 # Runtime configuration and behavior toggles
 # ─────────────────────────────────────────────
 variable "event_reporting_console" {
