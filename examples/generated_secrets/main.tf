@@ -3,8 +3,7 @@ terraform {
 }
 
 module "hush_service" {
-  source  = "hushsecurity/ecs/aws"
-  version = "~> 1.0"
+  source = "../../"
 
   cluster_name       = var.cluster_name
   container_registry = var.container_registry
