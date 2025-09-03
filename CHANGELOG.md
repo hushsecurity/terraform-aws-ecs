@@ -7,6 +7,27 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.0] - 2025-09-03
+
+### Added
+
+- `hush_vermon` module:
+  - ECS task definition and service for Vermon auto-upgrade functionality.
+  - Configurable environment variables including test mode support.
+  - Integration with existing container registry authentication.
+- Vermon configuration support:
+  - `enable_vermon` toggle to control Vermon deployment.
+  - `vermon_tag` variable for specifying Vermon container image tag.
+  - Test mode environment variables (`ECS_LASSIE_TEST_MODE`, `ECS_TEST_FORCE_UPDATE_IMAGE`).
+
+### Changed
+
+- Enhanced IAM permissions:
+  - Added ECS task management permissions (`ecs:DescribeTaskDefinition`, `ecs:ListTasks`, `ecs:DescribeTasks`) for Vermon functionality.
+  - Updated IAM policies to support both sensor and vermon operations.
+- Improved variable naming consistency:
+  - Renamed `sensor_tag` to `vermon_tag` in vermon module for semantic clarity.
+
 ## [1.0.0] - 2025-08-04
 
 ### Added
@@ -42,6 +63,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First public release of the `terraform-hush-ecs` module.
 - Includes all modules, wiring, secrets, IAM roles, and ECS service definition.
 
-[unreleased]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v0.0.1...v1.0.0
 [0.0.1]: https://github.com/hushsecurity/terraform-hush-ecs/releases/tag/v0.0.1
