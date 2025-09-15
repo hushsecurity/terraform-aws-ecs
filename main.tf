@@ -65,6 +65,9 @@ module "hush_sensor" {
   sensor_image_repo        = var.sensor_image_repo
   sensor_vector_image_repo = var.sensor_vector_image_repo
   sensor_tag               = var.sensor_tag
+
+  subnet_ids         = var.vpc_private_subnets
+  security_group_ids = var.security_groups
 }
 
 module "hush_vermon" {
@@ -91,4 +94,7 @@ module "hush_vermon" {
   vermon_image_repo        = var.vermon_image_repo
   vermon_vector_image_repo = var.sensor_vector_image_repo
   vermon_tag               = var.sensor_tag
+
+  subnet_ids         = var.vpc_private_subnets
+  security_group_ids = var.security_groups
 }

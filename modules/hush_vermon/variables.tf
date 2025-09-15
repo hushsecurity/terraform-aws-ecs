@@ -129,3 +129,16 @@ variable "deployment_credentials_secret_list" {
   description = "List of deployment credentials to inject into services"
   type        = list(map(string))
 }
+
+# ─────────────────────────────────────────────
+# AWSVPC Network Configuration
+# ─────────────────────────────────────────────
+variable "subnet_ids" {
+  description = "List of subnet IDs for AWSVPC networking mode"
+  type        = list(string)
+}
+
+variable "security_group_ids" {
+  description = "List of security group IDs for AWSVPC networking mode"
+  type        = list(string)
+}
