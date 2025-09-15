@@ -16,11 +16,21 @@ Create a `terraform.tfvars` file with the following:
 ```hcl
 cluster_name                  = "your-ecs-cluster-name"
 
+# Deployment credentials
 deployment_token              = "your-deployment-token"
 deployment_password           = "your-deployment-password"
 
+# Container registry credentials
 container_registry_username   = "your-registry-username"
 container_registry_password   = "your-registry-password"
+
+# AWSVPC networking (required)
+vpc_subnets = [
+  "subnet-xxxxxx",  # Private subnet A
+  "subnet-yyyyyy",  # Private subnet B
+  "subnet-zzzzzz"   # Private subnet C
+]
+security_groups = ["sg-xxxxxxxxx"]
 ````
 
 Then run:

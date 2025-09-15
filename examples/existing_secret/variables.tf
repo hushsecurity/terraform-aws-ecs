@@ -34,3 +34,16 @@ variable "deployment_credentials_secret_arn" {
   type        = string
   default     = null
 }
+
+# ─────────────────────────────────────────────
+# AWSVPC networking configuration
+# ─────────────────────────────────────────────
+variable "vpc_subnets" {
+  description = "List of subnet IDs for AWSVPC networking"
+  type        = list(string)
+}
+
+variable "security_groups" {
+  description = "List of security group IDs for AWSVPC networking"
+  type        = list(string)
+}

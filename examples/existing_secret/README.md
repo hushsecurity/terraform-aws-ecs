@@ -15,8 +15,18 @@ Create a `terraform.tfvars` file with the following:
 
 ```hcl
 cluster_name                              = "your-ecs-cluster-name"
+
+# Pre-existing Secrets Manager ARNs
 deployment_credentials_secret_arn         = "arn:aws:secretsmanager:...:hush-deployment-credentials-{suffix}"
 container_registry_credentials_secret_arn = "arn:aws:secretsmanager:...:hush-container-registry-credentials-{suffix}"
+
+# AWSVPC networking (required)
+vpc_subnets = [
+  "subnet-xxxxxx",  # Private subnet A
+  "subnet-yyyyyy",  # Private subnet B
+  "subnet-zzzzzz"   # Private subnet C
+]
+security_groups = ["sg-xxxxxxxxx"]
 ````
 
 Then run:
