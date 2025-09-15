@@ -181,3 +181,16 @@ variable "deployment_credentials_secret_arn" {
   type        = string
   default     = null
 }
+
+# ─────────────────────────────────────────────
+# Network configuration for awsvpc mode (sensor only)
+# ─────────────────────────────────────────────
+variable "vpc_private_subnets" {
+  description = "List of VPC private subnet IDs for ECS task placement in awsvpc network mode. Must be private subnets with NAT Gateway for internet access."
+  type        = list(string)
+}
+
+variable "security_groups" {
+  description = "List of security group IDs to associate with ECS tasks in awsvpc network mode. If not provided, an egress-only security group will be created."
+  type        = list(string)
+}

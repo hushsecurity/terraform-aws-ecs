@@ -7,6 +7,7 @@ locals {
 resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
   family                   = local.task_family
   requires_compatibilities = [local.launch_type]
+  network_mode             = "awsvpc"
   pid_mode                 = "host"
   execution_role_arn       = var.execution_role_arn
   task_role_arn            = var.task_role_arn
@@ -119,4 +120,9 @@ resource "aws_ecs_service" "hush_sensor_service" {
   launch_type         = local.launch_type
   scheduling_strategy = "DAEMON"
   task_definition     = aws_ecs_task_definition.hush_sensor_task_definition.arn
+
+  network_configuration {
+    subnets         = var.subnet_ids
+    security_groups = var.security_group_ids
+  }
 }
