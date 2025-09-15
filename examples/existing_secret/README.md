@@ -15,8 +15,23 @@ Create a `terraform.tfvars` file with the following:
 
 ```hcl
 cluster_name                              = "your-ecs-cluster-name"
+
+# Pre-existing Secrets Manager ARNs
 deployment_credentials_secret_arn         = "arn:aws:secretsmanager:...:hush-deployment-credentials-{suffix}"
 container_registry_credentials_secret_arn = "arn:aws:secretsmanager:...:hush-container-registry-credentials-{suffix}"
+
+# AWSVPC networking (required - private subnets only)
+vpc_private_subnets = [
+  "subnet-xxxxxx",  # Private subnet A with NAT Gateway
+  "subnet-yyyyyy",  # Private subnet B with NAT Gateway
+  "subnet-zzzzzz"   # Private subnet C with NAT Gateway
+]
+
+# Option 1: Auto-create security group (recommended)
+vpc_id = "vpc-xxxxxxxxx"  # Auto-creates egress-only security group
+
+# Option 2: Use existing security groups (alternative to above)
+# security_groups = ["sg-xxxxxxxxx"]  # Must allow egress traffic
 ````
 
 Then run:

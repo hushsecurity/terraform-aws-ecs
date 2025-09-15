@@ -10,4 +10,8 @@ module "hush_service" {
 
   deployment_credentials_secret_arn         = var.deployment_credentials_secret_arn
   container_registry_credentials_secret_arn = var.container_registry_credentials_secret_arn
+
+  vpc_private_subnets = var.vpc_private_subnets
+  security_groups     = var.security_groups
+  vpc_id              = var.vpc_id
 }
