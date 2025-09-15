@@ -49,3 +49,23 @@ variable "deployment_password" {
   sensitive   = true
   default     = null
 }
+
+# ─────────────────────────────────────────────
+# AWSVPC networking configuration
+# ─────────────────────────────────────────────
+variable "vpc_private_subnets" {
+  description = "List of private subnet IDs for AWSVPC networking (must have NAT Gateway for internet access)"
+  type        = list(string)
+}
+
+variable "security_groups" {
+  description = "List of security group IDs for AWSVPC networking. If not provided, an egress-only security group will be created."
+  type        = list(string)
+  default     = []
+}
+
+variable "vpc_id" {
+  description = "VPC ID where security groups will be created (required only when security_groups is not provided)"
+  type        = string
+  default     = ""
+}
