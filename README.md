@@ -48,14 +48,28 @@ Reusable Terraform module for deploying **Hush Security components** on AWS ECS 
 2. Define your credentials and configuration in `terraform.tfvars`, for example:
 
    ```hcl
-   aws_region  = "eu-west-1"
    cluster_name = "my-ecs-cluster"
 
-   container_registry_username  = "my-container-registry-username"
-   container_registry_password  = "my-container-registry-password"
+   # Container registry credentials  
+   container_registry_username = "my-container-registry-username"
+   container_registry_password = "my-container-registry-password"
 
+   # Deployment credentials
    deployment_token    = "my-deployment-token"
    deployment_password = "my-deployment-password"
+
+   # AWSVPC networking (required - private subnets only)
+   vpc_private_subnets = [
+     "subnet-xxxxxx",  # Private subnet A with NAT Gateway
+     "subnet-yyyyyy",  # Private subnet B with NAT Gateway  
+     "subnet-zzzzzz"   # Private subnet C with NAT Gateway
+   ]
+   
+   # Option 1: Auto-create security group (recommended)
+   vpc_id = "vpc-xxxxxxxxx"  # Auto-creates SG with HTTPS/HTTP egress rules
+   
+   # Option 2: Use existing security groups (alternative to above)
+   # security_groups = ["sg-xxxxxxxxx"]  # Must allow HTTPS egress
    ```
 
 3. Initialize and apply:
@@ -94,9 +108,95 @@ Instead of secret values, use:
 - ECS DAEMON-style deployment (1 task per EC2 instance)
 - Deploys both `sensor` and `sensor-vector` containers
 - **Auto-upgrade capability via Vermon** (optional, enabled by default)
+- **AWSVPC networking support** with dedicated ENI per task
+- **Auto-created security groups** with proper egress rules (optional)
 - Supports private container registries (e.g. Azure Container Registry)
 - Secure secrets injection via AWS Secrets Manager
 - Configurable CPU/memory requests and limits
+
+---
+
+## 🌐 AWSVPC Networking
+
+This module supports **AWSVPC networking mode** for enhanced network isolation and security.
+
+### Key Features
+- **Dedicated ENI per task** with individual IP addresses
+- **Security group isolation** for fine-grained network controls  
+- **VPC subnet placement** across multiple availability zones
+- **Task role support** for AWS service integration
+
+### Required Variables for AWSVPC
+
+#### Option 1: Use Existing Security Groups
+```hcl
+vpc_private_subnets = [
+  "subnet-xxxxxx",  # Private subnet A
+  "subnet-yyyyyy",  # Private subnet B  
+  "subnet-zzzzzz"   # Private subnet C
+]
+
+security_groups = ["sg-xxxxxxxxx"]  # Your existing security group
+```
+
+#### Option 2: Auto-Create Security Group
+```hcl
+vpc_private_subnets = [
+  "subnet-xxxxxx",  # Private subnet A
+  "subnet-yyyyyy",  # Private subnet B  
+  "subnet-zzzzzz"   # Private subnet C
+]
+
+vpc_id = "vpc-xxxxxxxxx"  # Security group will be auto-created with HTTPS egress
+# security_groups = []  # Optional: can be omitted for auto-creation
+```
+
+### Network Requirements
+- **Private subnets** with NAT Gateway for internet access (public subnets not supported)
+- **Security group rules** allowing:
+  - Outbound HTTPS (443) for container registry access and deployment reporting
+  - Any application-specific ports
+- **Task role** with ENI management permissions (automatically configured)
+
+### Security Group Management
+
+#### Auto-Creation (Recommended for New Deployments)
+When you provide `vpc_id`, the module automatically creates a security group with:
+- **HTTPS (443) egress**: For container registry access and deployment reporting
+- **HTTP (80) egress**: For container registry fallback and updates
+- **Named resource**: Tagged as `hush-ecs-auto-security-group` for easy identification
+- **Managed lifecycle**: Created and destroyed with the Terraform deployment
+
+#### Existing Groups (For Established Infrastructures)  
+When you provide `security_groups`, you must ensure they include:
+- **HTTPS (443) egress** to `0.0.0.0/0` for container registry and deployment reporting
+- **HTTP (80) egress** to `0.0.0.0/0` for container registry fallback (optional but recommended)
+
+#### Validation
+The module validates that either `security_groups` or `vpc_id` is provided, but not both simultaneously.
+
+### Why AWSVPC for Both Components?
+- **Sensor**: Requires dedicated ENI for network isolation and security group controls
+- **Vermon**: Benefits from consistent networking architecture and enhanced monitoring capabilities
+- **Best Practice**: AWS recommends AWSVPC networking for all ECS tasks over bridge/host networking
+
+---
+
+## 🔄 Auto-Upgrade (Vermon)
+
+The module includes optional **Vermon** component for automated container updates:
+
+### Enable Vermon
+```hcl
+enable_vermon           = true
+vermon_update_frequency = "8h"  # Check frequency
+```
+
+### How It Works
+- Monitors ECS services for new container image versions
+- Automatically triggers service updates when new images are available
+- Uses channel digests to determine update availability
+- Provides centralized upgrade management across multiple services
 
 ---
 
