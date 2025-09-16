@@ -7,26 +7,51 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.0] - 2025-09-03
+## [1.1.0] - 2025-01-16
 
 ### Added
 
-- `hush_vermon` module:
-  - ECS task definition and service for Vermon auto-upgrade functionality.
-  - Configurable environment variables including test mode support.
-  - Integration with existing container registry authentication.
-- Vermon configuration support:
-  - `enable_vermon` toggle to control Vermon deployment.
-  - `vermon_tag` variable for specifying Vermon container image tag.
-  - Test mode environment variables (`ECS_LASSIE_TEST_MODE`, `ECS_TEST_FORCE_UPDATE_IMAGE`).
+- **IAM Role Separation**:
+  - Separated ECS execution role from task roles following AWS security best practices
+  - Execution role handles container startup and secrets access
+  - Task roles provide minimal runtime permissions specific to each service
+  - Sensor module now receives task_role_arn for AWS service integration
+
+- **AWSVPC Networking Support**:
+  - `network_mode = "awsvpc"` for both sensor and vermon modules
+  - Dedicated Elastic Network Interface (ENI) per task
+  - Enhanced network isolation with security group controls
+  - New variables: `vpc_subnets` and `security_groups` for network configuration
+
+- **Auto-Created Security Groups**:
+  - New `vpc_id` variable for automatic egress-only security group creation
+  - Allows all outbound traffic for container registry access and deployment reporting
+  - Dual security group management options: existing groups or auto-creation
+  - Enhanced validation logic ensuring either `security_groups` or `vpc_id` is provided
 
 ### Changed
 
-- Enhanced IAM permissions:
-  - Added ECS task management permissions (`ecs:DescribeTaskDefinition`, `ecs:ListTasks`, `ecs:DescribeTasks`) for Vermon functionality.
-  - Updated IAM policies to support both sensor and vermon operations.
-- Improved variable naming consistency:
-  - Renamed `sensor_tag` to `vermon_tag` in vermon module for semantic clarity.
+- **Network Architecture**:
+  - Migrated from bridge networking to AWSVPC mode
+  - Updated ECS services with `network_configuration` blocks
+
+### Enhanced
+
+- **Documentation**:
+  - Added comprehensive AWSVPC networking guide
+  - Updated README with network requirements and configuration
+
+- **Vermon Module**:
+  - `hush_vermon` module for ECS auto-upgrade functionality
+  - `enable_vermon` toggle (disabled by default)
+  - `vermon_tag` variable for container image version
+  - Integration with container registry authentication
+  - Test mode environment variables support
+
+### Changed
+
+- **IAM Permissions**:
+  - Added ECS task management permissions for Vermon (`ecs:DescribeTaskDefinition`, `ecs:ListTasks`, `ecs:DescribeTasks`)
 
 ## [1.0.0] - 2025-08-04
 
