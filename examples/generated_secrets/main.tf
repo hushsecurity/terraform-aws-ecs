@@ -13,4 +13,7 @@ module "hush_service" {
 
   container_registry_username = var.container_registry_username
   container_registry_password = var.container_registry_password
+
+  vpc_subnets     = var.vpc_subnets
+  security_groups = var.security_groups
 }

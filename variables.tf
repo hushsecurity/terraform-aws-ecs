@@ -181,3 +181,16 @@ variable "deployment_credentials_secret_arn" {
   type        = string
   default     = null
 }
+
+# ─────────────────────────────────────────────
+# Network configuration for awsvpc mode (sensor only)
+# ─────────────────────────────────────────────
+variable "vpc_subnets" {
+  description = "List of subnet IDs where sensor tasks will be placed (required for sensor awsvpc network mode)"
+  type        = list(string)
+}
+
+variable "security_groups" {
+  description = "List of security group IDs to associate with sensor tasks (required for sensor awsvpc network mode)"
+  type        = list(string)
+}

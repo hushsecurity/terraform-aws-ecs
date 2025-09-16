@@ -46,6 +46,7 @@ module "hush_sensor" {
   service_name           = var.sensor_service_name
   cluster_name           = var.cluster_name
   execution_role_arn     = aws_iam_role.hush_ecs_role.arn
+  task_role_arn          = aws_iam_role.hush_ecs_role.arn
 
   exclude_task_families = local.manage_task_families
 
@@ -64,6 +65,9 @@ module "hush_sensor" {
   sensor_image_repo        = var.sensor_image_repo
   sensor_vector_image_repo = var.sensor_vector_image_repo
   sensor_tag               = var.sensor_tag
+
+  subnet_ids         = var.vpc_subnets
+  security_group_ids = var.security_groups
 }
 
 module "hush_vermon" {
@@ -90,4 +94,7 @@ module "hush_vermon" {
   vermon_image_repo        = var.vermon_image_repo
   vermon_vector_image_repo = var.sensor_vector_image_repo
   vermon_tag               = var.sensor_tag
+
+  subnet_ids         = var.vpc_subnets
+  security_group_ids = var.security_groups
 }

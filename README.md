@@ -48,14 +48,23 @@ Reusable Terraform module for deploying **Hush Security components** on AWS ECS 
 2. Define your credentials and configuration in `terraform.tfvars`, for example:
 
    ```hcl
-   aws_region  = "eu-west-1"
    cluster_name = "my-ecs-cluster"
 
-   container_registry_username  = "my-container-registry-username"
-   container_registry_password  = "my-container-registry-password"
+   # Container registry credentials  
+   container_registry_username = "my-container-registry-username"
+   container_registry_password = "my-container-registry-password"
 
+   # Deployment credentials
    deployment_token    = "my-deployment-token"
    deployment_password = "my-deployment-password"
+
+   # AWSVPC networking (required)
+   vpc_subnets = [
+     "subnet-xxxxxx",  # Private subnet A
+     "subnet-yyyyyy",  # Private subnet B  
+     "subnet-zzzzzz"   # Private subnet C
+   ]
+   security_groups = ["sg-xxxxxxxxx"]
    ```
 
 3. Initialize and apply:
@@ -94,9 +103,58 @@ Instead of secret values, use:
 - ECS DAEMON-style deployment (1 task per EC2 instance)
 - Deploys both `sensor` and `sensor-vector` containers
 - **Auto-upgrade capability via Vermon** (optional, enabled by default)
+- **AWSVPC networking support** with dedicated ENI per task
 - Supports private container registries (e.g. Azure Container Registry)
 - Secure secrets injection via AWS Secrets Manager
 - Configurable CPU/memory requests and limits
+
+---
+
+## 🌐 AWSVPC Networking
+
+This module supports **AWSVPC networking mode** for enhanced network isolation and security.
+
+### Key Features
+- **Dedicated ENI per task** with individual IP addresses
+- **Security group isolation** for fine-grained network controls  
+- **VPC subnet placement** across multiple availability zones
+- **Task role support** for AWS service integration
+
+### Required Variables for AWSVPC
+```hcl
+vpc_subnets = [
+  "subnet-xxxxxx",  # Private subnet A
+  "subnet-yyyyyy",  # Private subnet B  
+  "subnet-zzzzzz"   # Private subnet C
+]
+
+security_groups = ["sg-xxxxxxxxx"]  # Dedicated security group
+```
+
+### Network Requirements
+- **Private subnets** with NAT Gateway for internet access
+- **Security group rules** allowing:
+  - Outbound HTTPS (443) for container registry access
+  - Any application-specific ports
+- **Task role** with ENI management permissions (automatically configured)
+
+---
+
+## 🔄 Auto-Upgrade (Vermon)
+
+The module includes optional **Vermon** component for automated container updates:
+
+### Enable Vermon
+```hcl
+enable_vermon           = true
+vermon_update_frequency = "8h"  # Check frequency
+```
+
+### How It Works
+- Monitors ECS services for new container image versions
+- Automatically triggers service updates when new images are available
+- Uses channel digests to determine update availability
+- Provides centralized upgrade management across multiple services
 
 ---
 
