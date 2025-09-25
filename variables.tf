@@ -193,4 +193,11 @@ variable "vpc_private_subnets" {
 variable "security_groups" {
   description = "List of security group IDs to associate with ECS tasks in awsvpc network mode. If not provided, an egress-only security group will be created."
   type        = list(string)
+  default     = []
+}
+
+variable "vpc_id" {
+  description = "VPC ID where security groups will be created (required only when security_groups is not provided)"
+  type        = string
+  default     = ""
 }
