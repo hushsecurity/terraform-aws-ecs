@@ -139,7 +139,26 @@ variable "execution_role_arn" {
   type        = string
 }
 
+variable "task_role_arn" {
+  description = "IAM role ARN used by running tasks for AWS API calls"
+  type        = string
+  default     = null
+}
+
 variable "deployment_credentials_secret_list" {
   description = "List of deployment credentials to inject into services"
   type        = list(map(string))
+}
+
+# ─────────────────────────────────────────────
+# Network configuration for awsvpc mode
+# ─────────────────────────────────────────────
+variable "subnet_ids" {
+  description = "List of subnet IDs where tasks will be placed"
+  type        = list(string)
+}
+
+variable "security_group_ids" {
+  description = "List of security group IDs to associate with tasks"
+  type        = list(string)
 }

@@ -7,6 +7,43 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [1.1.1] - 2025-09-16
+
+### Added
+
+- **AWSVPC Networking Support**:
+  - `network_mode = "awsvpc"` for both sensor and vermon modules
+  - Dedicated Elastic Network Interface (ENI) per task
+  - Enhanced network isolation with security group controls
+  - New variables: `vpc_subnets` and `security_groups` for network configuration
+  - Task role support for ENI management permissions
+
+- **Auto-Created Security Groups**:
+  - New `vpc_id` variable for automatic security group creation
+  - Auto-created security groups include HTTPS (443) and HTTP (80) egress rules
+  - Dual security group management options: existing groups or auto-creation
+  - Enhanced validation logic ensuring either `security_groups` or `vpc_id` is provided
+
+### Changed
+
+- **Network Architecture**:
+  - Migrated from bridge networking to AWSVPC mode
+  - Updated ECS services with `network_configuration` blocks
+  - Enhanced IAM roles with task role ARN support
+
+### Enhanced
+
+- **Security Group Management**:
+  - Backward compatible with existing security group configurations
+  - Conditional resource creation using `count` based on configuration
+  - Clear documentation for both security group configuration options
+  - Updated examples with comprehensive variable configuration for enhanced functionality
+
+- **Documentation**:
+  - Added comprehensive AWSVPC networking guide
+  - Updated README with network requirements and configuration
+  - Added generic troubleshooting and migration guides
+
 ## [1.1.0] - 2025-09-03
 
 ### Added
@@ -63,7 +100,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - First public release of the `terraform-hush-ecs` module.
 - Includes all modules, wiring, secrets, IAM roles, and ECS service definition.
 
-[unreleased]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v1.1.1...HEAD
+[1.1.1]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v1.1.0...v1.1.1
 [1.1.0]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v1.0.0...v1.1.0
 [1.0.0]: https://github.com/hushsecurity/terraform-hush-ecs/compare/v0.0.1...v1.0.0
 [0.0.1]: https://github.com/hushsecurity/terraform-hush-ecs/releases/tag/v0.0.1

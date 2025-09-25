@@ -11,6 +11,7 @@ data "aws_region" "current" {}
 resource "aws_ecs_task_definition" "hush_vermon_task_definition" {
   family                   = local.task_family
   requires_compatibilities = [local.launch_type]
+  network_mode             = "awsvpc"
   execution_role_arn       = var.execution_role_arn
   task_role_arn            = var.vermon_task_role_arn
 
@@ -89,4 +90,9 @@ resource "aws_ecs_service" "hush_vermon_service" {
   launch_type     = local.launch_type
   task_definition = aws_ecs_task_definition.hush_vermon_task_definition.arn
   desired_count   = 1 # Single instance for cluster-wide operations
+
+  network_configuration {
+    subnets         = var.subnet_ids
+    security_groups = var.security_group_ids
+  }
 }
