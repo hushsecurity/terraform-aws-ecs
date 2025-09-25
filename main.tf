@@ -34,8 +34,32 @@ locals {
   ]
 
   manage_task_families = join(",", local.manage_task_families_list)
+
+  # Create security group if not provided
+  use_auto_security_groups = length(var.security_groups) == 0
+  security_groups_to_use   = local.use_auto_security_groups ? [aws_security_group.hush_ecs[0].id] : var.security_groups
 }
 
+# Egress-only security group for ECS tasks (created when security_groups not provided)
+resource "aws_security_group" "hush_ecs" {
+  count = length(var.security_groups) == 0 ? 1 : 0
+
+  name_prefix = "hush-ecs-"
+  vpc_id      = var.vpc_id
+  description = "Egress-only security group for Hush ECS tasks"
+
+  egress {
+    description = "Allow all outbound traffic"
+    from_port   = 0
+    to_port     = 0
+    protocol    = "-1"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "hush-ecs"
+  }
+}
 
 module "hush_sensor" {
   count = var.enable_sensor ? 1 : 0
@@ -67,7 +91,7 @@ module "hush_sensor" {
   sensor_tag               = var.sensor_tag
 
   subnet_ids         = var.vpc_private_subnets
-  security_group_ids = var.security_groups
+  security_group_ids = local.security_groups_to_use
 }
 
 module "hush_vermon" {
@@ -96,5 +120,5 @@ module "hush_vermon" {
   vermon_tag               = var.sensor_tag
 
   subnet_ids         = var.vpc_private_subnets
-  security_group_ids = var.security_groups
+  security_group_ids = local.security_groups_to_use
 }
