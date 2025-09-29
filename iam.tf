@@ -1,8 +1,8 @@
 data "aws_caller_identity" "current" {}
 data "aws_region" "current" {}
 
-resource "aws_iam_role" "hush_ecs_role" {
-  name = "hush-ecs-role"
+resource "aws_iam_role" "hush_ecs_execution_role" {
+  name = "hush-ecs-execution-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -14,9 +14,9 @@ resource "aws_iam_role" "hush_ecs_role" {
   })
 }
 
-resource "aws_iam_role_policy" "hush_ecs_role_policy" {
-  name = "hush-ecs-role-policy"
-  role = aws_iam_role.hush_ecs_role.id
+resource "aws_iam_role_policy" "hush_ecs_execution_role_policy" {
+  name = "hush-ecs-execution-role-policy"
+  role = aws_iam_role.hush_ecs_execution_role.id
 
   policy = jsonencode({
     Version = "2012-10-17",
@@ -33,9 +33,9 @@ resource "aws_iam_role_policy" "hush_ecs_role_policy" {
   })
 }
 
-resource "aws_iam_role" "hush_vermon_role" {
-  count = var.enable_vermon ? 1 : 0
-  name  = "hush-vermon-role"
+resource "aws_iam_role" "hush_sensor_task_role" {
+  count = var.enable_sensor ? 1 : 0
+  name  = "hush-sensor-task-role"
 
   assume_role_policy = jsonencode({
     Version = "2012-10-17",
@@ -47,22 +47,28 @@ resource "aws_iam_role" "hush_vermon_role" {
   })
 }
 
-resource "aws_iam_role_policy" "hush_vermon_role_policy" {
+resource "aws_iam_role" "hush_vermon_task_role" {
   count = var.enable_vermon ? 1 : 0
-  name  = "hush-vermon-role-policy"
-  role  = aws_iam_role.hush_vermon_role[0].id
+  name  = "hush-vermon-task-role"
+
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17",
+    Statement = [{
+      Effect    = "Allow",
+      Principal = { Service = "ecs-tasks.amazonaws.com" },
+      Action    = "sts:AssumeRole"
+    }]
+  })
+}
+
+resource "aws_iam_role_policy" "hush_vermon_task_role_policy" {
+  count = var.enable_vermon ? 1 : 0
+  name  = "hush-vermon-task-role-policy"
+  role  = aws_iam_role.hush_vermon_task_role[0].id
 
   policy = jsonencode({
     Version = "2012-10-17",
     Statement = [
-      {
-        Effect = "Allow",
-        Action = ["secretsmanager:GetSecretValue"],
-        Resource = [
-          local.deployment_credentials_secret_arn,
-          local.container_registry_credentials_secret_arn
-        ]
-      },
       {
         Effect = "Allow",
         Action = [
