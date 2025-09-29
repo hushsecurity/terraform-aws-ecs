@@ -9,6 +9,7 @@ resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
   requires_compatibilities = [local.launch_type]
   pid_mode                 = "host"
   execution_role_arn       = var.execution_role_arn
+  task_role_arn            = var.task_role_arn
 
   container_definitions = jsonencode([
     {
