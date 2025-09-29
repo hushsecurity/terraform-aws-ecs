@@ -45,7 +45,8 @@ module "hush_sensor" {
   task_definition_family = local.task_families.sensor
   service_name           = var.sensor_service_name
   cluster_name           = var.cluster_name
-  execution_role_arn     = aws_iam_role.hush_ecs_role.arn
+  execution_role_arn     = aws_iam_role.hush_ecs_execution_role.arn
+  task_role_arn          = aws_iam_role.hush_sensor_task_role[0].arn
 
   exclude_task_families = local.manage_task_families
 
@@ -74,8 +75,8 @@ module "hush_vermon" {
   task_definition_family = local.task_families.vermon
   service_name           = var.vermon_service_name
   cluster_name           = var.cluster_name
-  execution_role_arn     = aws_iam_role.hush_ecs_role.arn
-  vermon_task_role_arn   = aws_iam_role.hush_vermon_role[0].arn
+  execution_role_arn     = aws_iam_role.hush_ecs_execution_role.arn
+  vermon_task_role_arn   = aws_iam_role.hush_vermon_task_role[0].arn
 
   deployment_name      = var.cluster_name
   manage_task_families = local.manage_task_families
