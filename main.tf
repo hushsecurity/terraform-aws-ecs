@@ -34,8 +34,42 @@ locals {
   ]
 
   manage_task_families = join(",", local.manage_task_families_list)
+
+  # Auto-create security groups if not provided
+  use_auto_security_groups = length(var.security_groups) == 0
+  security_groups_to_use   = local.use_auto_security_groups ? [aws_security_group.hush_ecs[0].id] : var.security_groups
 }
 
+# Auto-created security group for ECS tasks (when security_groups not provided)
+resource "aws_security_group" "hush_ecs" {
+  count = length(var.security_groups) == 0 ? 1 : 0
+
+  name_prefix = "hush-ecs-"
+  vpc_id      = var.vpc_id
+  description = "Auto-created security group for Hush ECS tasks"
+
+  # Allow all outbound HTTPS traffic
+  egress {
+    description = "HTTPS outbound for container registry and deployment reporting"
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  # Allow all outbound HTTP traffic
+  egress {
+    description = "HTTP outbound for container registry fallback"
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "hush-ecs-auto-security-group"
+  }
+}
 
 module "hush_sensor" {
   count = var.enable_sensor ? 1 : 0
@@ -45,7 +79,7 @@ module "hush_sensor" {
   task_definition_family = local.task_families.sensor
   service_name           = var.sensor_service_name
   cluster_name           = var.cluster_name
-  execution_role_arn     = aws_iam_role.hush_ecs_role.arn
+  execution_role_arn     = aws_iam_role.hush_ecs_execution_role.arn
 
   exclude_task_families = local.manage_task_families
 
@@ -64,6 +98,9 @@ module "hush_sensor" {
   sensor_image_repo        = var.sensor_image_repo
   sensor_vector_image_repo = var.sensor_vector_image_repo
   sensor_tag               = var.sensor_tag
+
+  subnet_ids         = var.vpc_private_subnets
+  security_group_ids = local.security_groups_to_use
 }
 
 module "hush_vermon" {
@@ -74,8 +111,8 @@ module "hush_vermon" {
   task_definition_family = local.task_families.vermon
   service_name           = var.vermon_service_name
   cluster_name           = var.cluster_name
-  execution_role_arn     = aws_iam_role.hush_ecs_role.arn
-  vermon_task_role_arn   = aws_iam_role.hush_vermon_role[0].arn
+  execution_role_arn     = aws_iam_role.hush_ecs_execution_role.arn
+  vermon_task_role_arn   = aws_iam_role.hush_vermon_task_role[0].arn
 
   deployment_name      = var.cluster_name
   manage_task_families = local.manage_task_families
@@ -90,4 +127,7 @@ module "hush_vermon" {
   vermon_image_repo        = var.vermon_image_repo
   vermon_vector_image_repo = var.sensor_vector_image_repo
   vermon_tag               = var.sensor_tag
+
+  subnet_ids         = var.vpc_private_subnets
+  security_group_ids = local.security_groups_to_use
 }

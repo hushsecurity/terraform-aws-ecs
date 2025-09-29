@@ -62,3 +62,13 @@ output "container_registry_credentials_secret_arn" {
   value       = local.container_registry_credentials_secret_arn
   description = "ARN of the container registry credentials secret"
 }
+
+output "security_group_id" {
+  value       = length(var.security_groups) == 0 ? aws_security_group.hush_ecs[0].id : null
+  description = "ID of the auto-created security group (null if user-provided security groups are used)"
+}
+
+output "security_groups_used" {
+  value       = local.security_groups_to_use
+  description = "List of security group IDs actually used by ECS tasks"
+}
