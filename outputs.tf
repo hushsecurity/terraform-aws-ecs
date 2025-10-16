@@ -62,3 +62,8 @@ output "container_registry_credentials_secret_arn" {
   value       = local.container_registry_credentials_secret_arn
   description = "ARN of the container registry credentials secret"
 }
+
+output "security_group_ids" {
+  value       = local.security_groups_to_use
+  description = "List of security group IDs used by ECS tasks"
+}
