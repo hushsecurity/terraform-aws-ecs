@@ -20,7 +20,7 @@ variable "enable_sensor" {
 variable "enable_vermon" {
   description = "Whether to deploy the Vermon auto-upgrade component"
   type        = bool
-  default     = false
+  default     = true
 }
 
 # ─────────────────────────────────────────────
