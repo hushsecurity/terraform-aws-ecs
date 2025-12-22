@@ -7,7 +7,36 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-## [1.1.0] - 2025-01-16
+## [1.1.1] - 2025-12-22
+
+### Added
+
+- **Vermon Module**:
+  - Added `CHANNEL_DIGESTS_ENDPOINT` environment variable to enable digest-based auto-update functionality
+  - Endpoint is dynamically constructed from container registry: `https://hush-runtime-config.s3.amazonaws.com/cr-digests/${var.container_registry}/channels.json`
+
+### Changed
+
+- **Examples**:
+  - Reorganized examples for Terraform Registry deployment readiness
+  - Updated module source to use `hushsecurity/ecs/aws` with version constraints
+  - Simplified variables to essential parameters only
+  - Improved documentation with clearer quick-start guides
+  - Streamlined terraform.tfvars with clean placeholders
+
+### Fixed
+
+- **Outputs**:
+  - Added safe output handling with `try()` function for disabled services
+  - Prevents crashes when `enable_sensor = false` or `enable_vermon = false`
+  - All sensor and vermon outputs now return `null` safely when modules are disabled
+
+### Reverted
+
+- **Vermon Module**:
+  - Re-enabled `hush_vermon` module by default (reverted HUSH-2826 disable-by-default change)
+
+## [1.1.0] - 2025-09-16
 
 ### Added
 
