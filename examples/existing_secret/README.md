@@ -1,51 +1,65 @@
-# Existing Secret Example – ECS Sensor Deployment
+# Existing Secrets Example
 
-This example deploys the Hush ECS sensor service on EC2-backed ECS using the root Terraform module, referencing **pre-existing Secrets Manager ARNs**.
+Deploy Hush ECS services using **existing AWS Secrets Manager secrets** for credentials.
 
-## What It Does
+## Quick Start
 
-- Registers a daemon-mode ECS service (1 task per EC2 instance)
-- Defines a task with `sensor` and `sensor-vector` containers
-- Injects deployment and registry credentials via existing Secrets Manager ARNs
-- Creates a minimal ECS execution role with access to logs and secrets
-
-## Usage
-
-Create a `terraform.tfvars` file with the following:
+1. **Edit `terraform.tfvars`** with your AWS resources:
 
 ```hcl
-cluster_name                              = "your-ecs-cluster-name"
+cluster_name = "your-ecs-cluster-name"
 
-# Pre-existing Secrets Manager ARNs
-deployment_credentials_secret_arn         = "arn:aws:secretsmanager:...:hush-deployment-credentials-{suffix}"
-container_registry_credentials_secret_arn = "arn:aws:secretsmanager:...:hush-container-registry-credentials-{suffix}"
+deployment_credentials_secret_arn         = "arn:aws:secretsmanager:region:account-id:secret:hush-deployment-creds-XXXXXX"
+container_registry_credentials_secret_arn = "arn:aws:secretsmanager:region:account-id:secret:hush-registry-creds-XXXXXX"
 
-# AWSVPC networking (required - private subnets only)
-vpc_private_subnets = [
-  "subnet-xxxxxx",  # Private subnet A with NAT Gateway
-  "subnet-yyyyyy",  # Private subnet B with NAT Gateway
-  "subnet-zzzzzz"   # Private subnet C with NAT Gateway
-]
+vpc_private_subnets = ["subnet-xxx", "subnet-yyy", "subnet-zzz"]
+vpc_id              = "vpc-xxxxxxxxxxxxxxxxx"
+```
 
-# Option 1: Auto-create security group (recommended)
-vpc_id = "vpc-xxxxxxxxx"  # Auto-creates egress-only security group
-
-# Option 2: Use existing security groups (alternative to above)
-# security_groups = ["sg-xxxxxxxxx"]  # Must allow egress traffic
-````
-
-Then run:
+2. **Deploy:**
 
 ```bash
 terraform init
 terraform apply
 ```
 
-**Note:** This will create AWS resources and may incur costs. Run `terraform destroy` to clean up.
+3. **Clean up:**
+
+```bash
+terraform destroy
+```
+
+## Secret Format Requirements
+
+**Deployment credentials secret** (JSON):
+```json
+{
+  "deployment_token": "your-token",
+  "deployment_password": "your-password"
+}
+```
+
+**Container registry credentials secret** (JSON):
+```json
+{
+  "username": "your-username",
+  "password": "your-password"
+}
+```
+
+## What Gets Created
+
+- ✅ Hush sensor ECS service (daemon mode - 1 per EC2 instance)
+- ✅ Hush Vermon ECS service (auto-upgrade component)
+- ✅ ECS task definitions with sensor and vector containers
+- ✅ Security group (egress-only, auto-created)
+- ✅ IAM roles for ECS task execution
 
 ## Requirements
 
-| Name      | Version |
-| --------- | ------- |
-| Terraform | >= 1.0  |
+- Terraform >= 1.3
+- AWS provider >= 5.0
+- ECS cluster (EC2-backed)
+- Private subnets with NAT Gateway
+- Valid AWS Secrets Manager secrets
 | AWS       | >= 5.0  |
