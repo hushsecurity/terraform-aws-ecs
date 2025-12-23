@@ -1,11 +1,10 @@
 locals {
-  # ECS resource names and values
-  task_family  = var.task_definition_family
-  service_name = var.service_name
-  launch_type  = "EC2"
+  task_family              = var.task_definition_family
+  service_name             = var.service_name
+  launch_type              = "EC2"
+  channel_digests_endpoint = "https://hush-runtime-config.s3.amazonaws.com/cr-digests/${var.container_registry}/channels.json"
 }
 
-# Data sources for AWS region
 data "aws_region" "current" {}
 
 resource "aws_ecs_task_definition" "hush_vermon_task_definition" {
@@ -37,6 +36,7 @@ resource "aws_ecs_task_definition" "hush_vermon_task_definition" {
         { name = "SELF_ECS_TASK_FAMILY", value = local.task_family },
         { name = "ECS_LAUNCH_TYPE", value = local.launch_type },
         { name = "CHANNEL_DIGESTS_PERIOD", value = var.vermon_update_frequency },
+        { name = "CHANNEL_DIGESTS_ENDPOINT", value = local.channel_digests_endpoint },
         { name = "CONTAINER_REGISTRY", value = var.container_registry },
         { name = "DEPLOYMENT_NAME", value = var.deployment_name },
         { name = "DEPLOYMENT_TAGS", value = jsonencode(var.deployment_tags) }
