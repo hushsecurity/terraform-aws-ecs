@@ -38,6 +38,7 @@ resource "aws_ecs_task_definition" "hush_sensor_task_definition" {
         { name = "TRACE_HOST", value = tostring(var.trace_host) },
         { name = "TRACE_PODS_DEFAULT", value = tostring(var.trace_pods_default) },
         { name = "REPORT_TLS", value = tostring(var.report_tls) },
+        { name = "SNOOPY_DISABLE_JAVA_PROBING", value = tostring(!var.enable_java_probing) },
         { name = "AKEYLESS_GATEWAY_DOMAIN", value = tostring(var.akeyless_gateway_domain) },
         { name = "EVENT_REPORTING_CONSOLE", value = var.event_reporting_console }
         ],
