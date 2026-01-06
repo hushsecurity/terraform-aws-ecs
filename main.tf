@@ -78,6 +78,7 @@ module "hush_sensor" {
   trace_host              = var.trace_host
   trace_pods_default      = var.trace_pods_default
   report_tls              = var.report_tls
+  enable_java_probing     = var.enable_java_probing
   cri_socket_path         = var.cri_socket_path
   docker_socket_path      = var.docker_socket_path
   akeyless_gateway_domain = var.akeyless_gateway_domain

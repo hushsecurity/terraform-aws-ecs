@@ -77,6 +77,12 @@ variable "report_tls" {
   default     = false
 }
 
+variable "enable_java_probing" {
+  description = "Enable Java probing in the sensor"
+  type        = bool
+  default     = true
+}
+
 variable "cri_socket_path" {
   description = "Absolute path to the CRI socket used by the sensor (e.g., /var/run/containerd/containerd.sock)"
   type        = string
